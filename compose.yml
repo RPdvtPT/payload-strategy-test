@@ -1,0 +1,33 @@
+name: 'strategy-test'
+
+services:
+  payload-strategy:
+    working_dir: /home/node/app/
+    container_name: payload-strategy
+    image: node:23-alpine
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+      - /home/node/app/node_modules
+    depends_on:
+      - mongo-strategy
+    env_file:
+      - .env
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && pnpm dev"
+
+  mongo-strategy:
+    container_name: mongo-strategy
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    command:
+      - --storageEngine=wiredTiger
+    volumes:
+      - data:/data/db
+    logging:
+      driver: none
+    attach: false
+
+volumes:
+  data:
